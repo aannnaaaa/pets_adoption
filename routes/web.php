@@ -14,7 +14,12 @@ Route::get('/hello', function () {
 });
 
 Route::get('/announcements', [AnnouncementController::class, 'index']);
+Route::get('/announcement/create', [AnnouncementController::class, 'create']);
+Route::post('/announcement', [AnnouncementController::class, 'store']);
 Route::get('/announcements/{id}', [AnnouncementController::class, 'show']);
+Route::get('/announcement/edit/{id}', [AnnouncementController::class, 'edit']);
+Route::post('/announcement/update/{id}', [AnnouncementController::class, 'update']);
+Route::get('/announcement/destroy/{id}', [AnnouncementController::class, 'destroy']);
 
 Route::get('/messages', [MessageController::class, 'index']);
 Route::get('/messages/{id}', [MessageController::class, 'show']);
