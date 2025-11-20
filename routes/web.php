@@ -26,3 +26,5 @@ Route::get('/messages/{id}', [MessageController::class, 'show']);
 
 Route::get('/users/{id}/reviews/received', [ReviewController::class, 'showReceived']);
 Route::get('/users/{id}/reviews/given', [ReviewController::class, 'showGiven']);
+
+

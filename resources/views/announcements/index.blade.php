@@ -25,5 +25,6 @@
         </tr>
     @endforeach
 </table>
+{{ $announcements->links() }}
 </body>
 </html>

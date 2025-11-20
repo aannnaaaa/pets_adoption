@@ -8,10 +8,11 @@ use Illuminate\Http\Request;
 
 class AnnouncementController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $perpage = $request->perpage ?? 2;
         return view('announcements.index', [
-            'announcements' => Announcement::all()
+            'announcements' => Announcement::paginate($perpage)->withQueryString()
         ]);
     }
 
