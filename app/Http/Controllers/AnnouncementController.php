@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Announcement;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class AnnouncementController extends Controller
 {
@@ -55,8 +56,15 @@ class AnnouncementController extends Controller
 
     public function edit(string $id)
     {
+        $announcement = Announcement::all()->where('id', $id)->first();
+
+        if (! Gate::allows( 'update-announcement', $announcement)) {
+            return redirect( '/error')->with('message',
+                'У вас нет разрешения на редактирование объявления ' . $id);
+        }
+
         return view('announcements.edit', [
-            'announcement' => Announcement::all()->where('id', $id)->first(),
+            'announcement' => $announcement,
             'users' => User::whereIn('role', ['owner', 'shelter'])->get()
         ]);
     }
@@ -97,7 +105,14 @@ class AnnouncementController extends Controller
 
     public function destroy(string $id)
     {
+        if (! Gate::allows( 'destroy-announcement', Announcement::all()->where( 'id', $id)->first())) {
+            return redirect( '/error')->with('message',
+                'У вас нет разрешения на удаление объявления ' . $id);
+        }
+
         Announcement::destroy($id);
-        return redirect(to: '/announcements');
+        return view('announcements.success', [
+            'message' => 'Объявление #' . $id . ' успешно удалено!'
+        ]);
     }
 }

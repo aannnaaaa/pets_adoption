@@ -4,6 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Gate;
+use App\Models\Announcement;
+use App\Models\User;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,6 +23,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-       Paginator::defaultView('pagination::default');
+        Paginator::defaultView('pagination::default');
+
+        Gate::define('destroy-announcement', function (User $user, Announcement $announcement) {
+            return $user->role === 'admin'
+                || $user->id === $announcement->owner_id;
+        });
+        Gate::define('update-announcement', function (User $user, Announcement $announcement) {
+            return $user->id === $announcement->owner_id;
+        });
     }
 }

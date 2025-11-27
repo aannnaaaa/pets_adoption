@@ -20,8 +20,15 @@
             <td>{{$announcement->title}}</td>
             <td>{{$announcement->price}}</td>
             <td>{{$announcement->owner->name}}</td>
-            <td><a href="{{url('announcement/destroy/'.$announcement->id)}}">Удалить</a>
-                <a href="{{url('announcement/edit/'.$announcement->id)}}">Редактировать</a></td>
+            <td>
+                @can('destroy-announcement', $announcement)
+                    <a href="{{url('announcement/destroy/'.$announcement->id)}}">Удалить</a>
+                @endcan
+
+                @can('update-announcement', $announcement)
+                    <a href="{{url('announcement/edit/'.$announcement->id)}}">Редактировать</a>
+                @endcan
+            </td>
         </tr>
     @endforeach
 </table>
