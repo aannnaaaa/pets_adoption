@@ -1,35 +1,59 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>609-32</title>
-    <style> .is-invalid { color: red; } </style>
-</head>
-<body>
-@if($user)
-    <h2>Здравствуйте, {{ $user->name }}</h2>
-    <a href="{{url('logout')}}">Выйти из системы</a>
-@else
-    <h2>Вход в систему</h2>
-    <form method="post" action="{{url('auth')}}">
-        @csrf
-        <label>E-mail</label>
-        <input type="text" name="email" value="{{ old('email') }}"/>
-        @error('email')
-        <div class="is-invalid">{{ $message }}</div>
-        @enderror
-        <br>
-        <label>Пароль</label>
-        <input type="password" name="password" value="{{ old('password') }}"/>
-        @error('password')
-        <div class="is-invalid">{{ $message }}</div>
-        @enderror
-        <br>
-        <input type="submit">
-    </form>
-    @error('error')
-    <div class="is-invalid">{{ $message }}</div>
-    @enderror
-@endif
-</body>
-</html>
+@extends('layout')
+
+@section('title', 'Вход в систему')
+
+@section('content')
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            @guest
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">Вход в систему</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="/login">
+                            @csrf
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email адрес</label>
+                                <input type="email"
+                                       class="form-control @error('email') is-invalid @enderror"
+                                       id="email"
+                                       name="email"
+                                       value="{{ old('email') }}"
+                                       required
+                                       autofocus>
+                                @error('email')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Пароль</label>
+                                <input type="password"
+                                       class="form-control @error('password') is-invalid @enderror"
+                                       id="password"
+                                       name="password"
+                                       required>
+                                @error('password')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">Войти</button>
+                        </form>
+                    </div>
+                </div>
+            @endguest
+
+            @auth
+                <div class="card shadow">
+                    <div class="card-body text-center">
+                        <h4>Добро пожаловать, {{ $user->name }}!</h4>
+                        <p class="text-muted">Роль: {{ $user->role }}</p>
+                        <a href="/announcements" class="btn btn-primary">Перейти к объявлениям</a>
+                    </div>
+                </div>
+            @endauth
+        </div>
+    </div>
+@endsection

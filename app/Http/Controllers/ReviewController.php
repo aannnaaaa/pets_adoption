@@ -2,31 +2,38 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use Illuminate\Support\Facades\DB;
+use App\Models\Review;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
-    public function showReceived($id)
+    public function store(Request $request, $userId)
     {
-        $user = User::with('reviewsReceived')->findOrFail($id);
+        $validated = $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'nullable|string|max:1000',
+        ]);
 
-        $avgRating = DB::table('reviews')
-            ->where('reviewed_user_id', $id)
-            ->selectRaw('AVG(rating) as average')
-            ->first();
+        if (Auth::id() == $userId) {
+            return redirect()->back()->with('error', 'Вы не можете оставить отзыв самому себе.');
+        }
 
-        return view('reviews.received', compact('user', 'avgRating'));
-    }
+        $existingReview = Review::where('reviewer_id', Auth::id())
+            ->where('reviewed_user_id', $userId)
+            ->exists();
 
-    public function showGiven($id)
-    {
-        $user = User::with('reviewsGiven')->findOrFail($id);
+        if ($existingReview) {
+            return redirect()->back()->with('error', 'Вы уже оставляли отзыв этому пользователю.');
+        }
 
-        $totalReviews = DB::table('reviews')
-            ->where('reviewer_id', $id)
-            ->count();
+        Review::create([
+            'reviewer_id' => Auth::id(),
+            'reviewed_user_id' => $userId,
+            'rating' => $validated['rating'],
+            'comment' => $validated['comment'] ?? null,
+        ]);
 
-        return view('reviews.given', compact('user', 'totalReviews'));
+        return redirect()->back()->with('success', 'Отзыв успешно добавлен!');
     }
 }

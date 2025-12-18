@@ -9,6 +9,8 @@ class Review extends Model
 {
     use HasFactory;
 
+    public $timestamps = false;
+
     protected $fillable = ['reviewer_id', 'reviewed_user_id', 'rating', 'comment'];
 
     public function reviewer()

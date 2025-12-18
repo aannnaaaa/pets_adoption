@@ -1,40 +1,36 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AnnouncementController;
-use App\Http\Controllers\MessageController;
-use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\MessageController;
 
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ReviewController;
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/hello', function () {
-    return view('hello', ['title' => 'Hello World!']);
-});
+Route::get('/login', [LoginController::class, 'login'])->name('login');
+Route::post('/login', [LoginController::class, 'authenticate'])->name('login.authenticate');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::get('/announcements', [AnnouncementController::class, 'index']);
-Route::post('/announcement', [AnnouncementController::class, 'store']);
-Route::get('/announcements/{id}', [AnnouncementController::class, 'show']);
-Route::get( '/announcement/create', [AnnouncementController::class, 'create'])->middleware( 'auth');
-Route::get( '/announcement/destroy/{id}', [AnnouncementController::class, 'destroy'])->middleware( 'auth');
-Route::post( '/announcement/update/{id}', [AnnouncementController::class, 'update'])->middleware('auth');
-Route::get( '/announcement/edit/{id}', [AnnouncementController::class, 'edit'])->middleware( 'auth');
+Route::get('/profile', [UserController::class, 'profile'])->name('profile')->middleware('auth');
+Route::get('/users/{id}', [UserController::class, 'show'])->name('users.show');
 
-Route::get('/messages', [MessageController::class, 'index']);
-Route::get('/messages/{id}', [MessageController::class, 'show']);
+Route::get('/announcements', [AnnouncementController::class, 'index'])->name('announcements.index');
+Route::get('/announcements/create', [AnnouncementController::class, 'create'])->name('announcements.create')->middleware('auth');
+Route::post('/announcements', [AnnouncementController::class, 'store'])->name('announcements.store')->middleware('auth');
+Route::get('/announcements/{id}', [AnnouncementController::class, 'show'])->name('announcements.show');
+Route::get('/announcements/{id}/edit', [AnnouncementController::class, 'edit'])->name('announcements.edit')->middleware('auth');
+Route::put('/announcements/{id}', [AnnouncementController::class, 'update'])->name('announcements.update')->middleware('auth');
+Route::delete('/announcements/{id}', [AnnouncementController::class, 'destroy'])->name('announcements.destroy')->middleware('auth');
 
-Route::get('/users/{id}/reviews/received', [ReviewController::class, 'showReceived']);
-Route::get('/users/{id}/reviews/given', [ReviewController::class, 'showGiven']);
+Route::get('/error', function () {
+    return view('error');
+})->name('error');
 
+Route::get('/messages', [MessageController::class, 'index'])->name('messages.index')->middleware('auth');
+Route::get('/messages/{id}', [MessageController::class, 'show'])->name('messages.show')->middleware('auth');
 
-
-Route::get( '/login', [LoginController::class, 'login'])->name('login');
-Route::get('/logout', [LoginController::class, 'logout']);
-Route::post('/auth', [LoginController::class, 'authenticate']);
-
-Route::get( '/error', function () {
-    return view( 'error', ['message' => session( 'message')]);
-});
-
+Route::post('/users/{user}/reviews', [ReviewController::class, 'store']) ->name('reviews.store') ->middleware('auth');

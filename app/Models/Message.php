@@ -11,6 +11,11 @@ class Message extends Model
 
     protected $fillable = ['announcement_id', 'sender_id', 'receiver_id', 'text', 'sent_at', 'read_at'];
 
+    protected $casts = [
+        'sent_at' => 'datetime',
+        'read_at' => 'datetime',
+    ];
+
     public function announcement()
     {
         return $this->belongsTo(Announcement::class);
@@ -26,4 +31,3 @@ class Message extends Model
         return $this->belongsTo(User::class, 'receiver_id');
     }
 }
-
