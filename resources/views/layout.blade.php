@@ -30,7 +30,6 @@
                     </li>
                 @endauth
             </ul>
-
             <!-- форма аутентификации в меню -->
             <ul class="navbar-nav">
                 @guest

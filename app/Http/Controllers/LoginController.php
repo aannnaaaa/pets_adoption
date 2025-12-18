@@ -18,7 +18,7 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // Редирект на объявления после успешного входа
+            // редирект на объявления после успешного входа
             return redirect()->intended('announcements');
         }
 
